@@ -11,7 +11,9 @@ const onMouseMove$ = fromEvent(document,
  * Crear el observador
  */
 const observadorMouse = {
-    next: (event) => {},
+    next: (event) => {
+        console.log(event)
+    },
 }
 
 /**
