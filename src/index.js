@@ -1,4 +1,4 @@
-import { fromEvent } from "rxjs";
+import { fromEvent, Subject } from "rxjs";
 import WORDS_LIST from './wordsList.json'
 
 /**
@@ -11,6 +11,11 @@ const letterRow = document.getElementsByClassName('letter-row');
  */
 const onKeyDown$ = fromEvent(document, "keydown")
 
+/**
+ * Observable subject
+ */
+const userWinOrLoose$ = new Subject();
+
 /**Posición en x */
 let letterX = 0;
 let letterY = 0;
@@ -19,7 +24,8 @@ let userAnswer = [];
 /**Obtener una palabra de la lista aleatoriamente */
 const getRandomWord = () => WORDS_LIST[Math.floor(Math.random() * WORDS_LIST.length)];
 
-console.log(getRandomWord())
+let rigthtWord = getRandomWord();
+console.log(rigthtWord)
 
 
 /**
@@ -57,9 +63,9 @@ const deleteLetter = {
 const checkWord = {
     next: (event) => {
         if (event.key === 'Enter') {
-            console.log(getRandomWord())
-            console.log(userAnswer)
-
+            if (userAnswer.join("") === rigthtWord) {
+                userWinOrLoose$.next()
+            }
         }
     }
 }
@@ -70,8 +76,17 @@ const checkWord = {
 onKeyDown$.subscribe(insertLetter);
 
 /**
- * Subscrmirme al otro observable
+ * Subcribirme al otro observable
  */
 onKeyDown$.subscribe(deleteLetter);
 
+/**verificar que sea igual la palabra */
 onKeyDown$.subscribe(checkWord);
+
+userWinOrLoose$.subscribe(() => {
+    console.log('prueba')
+    let lettersRowsWinned = Array.from(letterRow)[letterX]
+    for (let i = 0; i < 5; i++) {
+        lettersRowsWinned.children[i].classList.add('letter-green');
+    }
+})
